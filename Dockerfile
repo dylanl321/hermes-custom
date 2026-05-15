@@ -10,8 +10,8 @@
 #   - blogwatcher-cli (RSS/blog monitor)
 #   - AWS CLI v2 (for Bedrock)
 
-ARG HERMES_VERSION=latest
-FROM ghcr.io/nousresearch/hermes-agent:${HERMES_VERSION}
+ARG HERMES_VERSION=main
+FROM nousresearch/hermes-agent:${HERMES_VERSION}
 
 USER root
 
