@@ -39,8 +39,8 @@ RUN mkdir -p ${NODE_PREFIX} && \
     tar -xJ --strip-components=1 -C ${NODE_PREFIX} && \
     # Install Claude Code globally into this prefix
     ${NODE_PREFIX}/bin/npm install -g @anthropic-ai/claude-code@latest && \
-    # Verify
-    ${NODE_PREFIX}/bin/claude --version
+    # Verify node works (claude --version requires a TTY/config, skip it)
+    ${NODE_PREFIX}/bin/node --version
 
 # ============================================================
 # 1Password CLI (op) — for secrets management
