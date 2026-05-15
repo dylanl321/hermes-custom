@@ -70,7 +70,9 @@ RUN . /opt/hermes/.venv/bin/activate && \
         boto3 \
         "discord.py>=2.3" \
         "python-telegram-bot>=21.0" \
-    && python3 -c "import paho.mqtt; import boto3; import discord; import telegram; print('Python deps OK')"
+        "playwright>=1.40,<2" \
+        openpyxl \
+    && python3 -c "import paho.mqtt; import boto3; import discord; import telegram; import playwright; print('Python deps OK')"
 
 # ============================================================
 # blogwatcher-cli (Go binary — bundled in this repo under bin/)
