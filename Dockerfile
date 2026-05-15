@@ -71,12 +71,12 @@ RUN . /opt/hermes/.venv/bin/activate && \
     && python3 -c "import paho.mqtt; import boto3; print('Python deps OK')"
 
 # ============================================================
-# blogwatcher-cli (Rust binary via cargo-binstall or prebuilt)
+# blogwatcher-cli (Go binary — bundled in this repo under bin/)
+# Copy the pre-built binary. To update: replace bin/blogwatcher-cli
+# and rebuild.
 # ============================================================
-RUN curl -fsSL https://github.com/nicholasgasior/gokbd/releases/download/v0.2.0/blogwatcher-cli-v0.2.0-x86_64-unknown-linux-musl.tar.gz -o /tmp/bw.tar.gz 2>/dev/null && \
-    tar -xzf /tmp/bw.tar.gz -C /usr/local/bin/ 2>/dev/null && \
-    rm -f /tmp/bw.tar.gz || \
-    echo "blogwatcher-cli: will be installed at runtime via install script"
+COPY bin/blogwatcher-cli /usr/local/bin/blogwatcher-cli
+RUN chmod +x /usr/local/bin/blogwatcher-cli
 
 # ============================================================
 # Ensure PATH includes our custom prefixes at runtime
