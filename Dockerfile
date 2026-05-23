@@ -94,3 +94,7 @@ RUN chown -R hermes:hermes /opt/data/node 2>/dev/null || true
 
 # Keep the upstream entrypoint and volume
 VOLUME ["/opt/data"]
+
+# ============================================================
+# Build trigger: pull latest upstream (2026-05-22 update)
+# ============================================================
