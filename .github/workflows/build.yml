@@ -50,10 +50,15 @@ jobs:
       - name: Determine Hermes version
         id: hermes_ver
         run: |
-          if [ "${{ github.event_name }}" = "workflow_dispatch" ]; then
+          # Default to the patched Mantle base (see Dockerfile ARG
+          # HERMES_BASE_IMAGE). Passing "main" here would resolve to
+          # ghcr.io/dylanl321/hermes-patched:main, which does not exist.
+          # workflow_dispatch can still override the tag explicitly.
+          if [ "${{ github.event_name }}" = "workflow_dispatch" ] \
+             && [ -n "${{ github.event.inputs.hermes_version }}" ]; then
             echo "version=${{ github.event.inputs.hermes_version }}" >> $GITHUB_OUTPUT
           else
-            echo "version=main" >> $GITHUB_OUTPUT
+            echo "version=mantle-75471" >> $GITHUB_OUTPUT
           fi
 
       - name: Build and push

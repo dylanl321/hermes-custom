@@ -10,8 +10,18 @@
 #   - blogwatcher-cli (RSS/blog monitor)
 #   - AWS CLI v2 (for Bedrock)
 
-ARG HERMES_VERSION=main
-FROM nousresearch/hermes-agent:${HERMES_VERSION}
+# Base: patched Hermes image carrying the Bedrock Mantle multi-turn fix
+# (upstream issue #75471 / PR #75561, rebased onto main + leak-pattern
+# widening). Built from dylanl321/hermes-agent @ branch mantle-75471-on-main
+# by .github/workflows/build-patched-image.yml in that repo.
+#
+# To go back to stock upstream, set:
+#   HERMES_BASE_IMAGE=nousresearch/hermes-agent
+#   HERMES_VERSION=main
+# Revert to a plain upstream base once #75561 merges and ships in a release.
+ARG HERMES_BASE_IMAGE=ghcr.io/dylanl321/hermes-patched
+ARG HERMES_VERSION=mantle-75471
+FROM ${HERMES_BASE_IMAGE}:${HERMES_VERSION}
 
 USER root
 
@@ -96,5 +106,6 @@ RUN chown -R hermes:hermes /opt/data/node 2>/dev/null || true
 VOLUME ["/opt/data"]
 
 # ============================================================
-# Build trigger: pull latest upstream (2026-06-02 update to v0.15.2)
+# Build trigger: 2026-08-05 — rebase onto patched Mantle base
+# (ghcr.io/dylanl321/hermes-patched:mantle-75471, issue #75471)
 # ============================================================
