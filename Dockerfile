@@ -9,6 +9,7 @@
 #   - paho-mqtt (Python MQTT client)
 #   - blogwatcher-cli (RSS/blog monitor)
 #   - AWS CLI v2 (for Bedrock)
+#   - OpenSSH server + sqlite3 (for ScarfGo remote access)
 
 # Base: patched Hermes image carrying the Bedrock Mantle multi-turn fix
 # (upstream issue #75471 / PR #75561, rebased onto main + leak-pattern
@@ -36,7 +37,15 @@ RUN apt-get update && \
         wget \
         ca-certificates \
         gnupg \
+        openssh-server \
+        sqlite3 \
     && rm -rf /var/lib/apt/lists/*
+
+# ScarfGo connects directly to this container over key-only SSH. Host keys and
+# authorized_keys live on the persistent /opt/data mount, not in the image.
+COPY docker/s6-rc.d/scarfgo-sshd /etc/s6-overlay/s6-rc.d/scarfgo-sshd
+RUN chmod 0755 /etc/s6-overlay/s6-rc.d/scarfgo-sshd/run && \
+    touch /etc/s6-overlay/s6-rc.d/user/contents.d/scarfgo-sshd
 
 # ============================================================
 # Node.js 22 LTS — separate prefix at /opt/data/node

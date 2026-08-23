@@ -1,0 +1,41 @@
+#!/command/with-contenv sh
+set -eu
+
+SSH_DIR=/opt/data/ssh
+AUTH_DIR=/opt/data/.ssh
+mkdir -p "$SSH_DIR" "$AUTH_DIR" /run/sshd
+chown hermes:hermes "$AUTH_DIR"
+chmod 0700 "$AUTH_DIR"
+touch "$AUTH_DIR/authorized_keys"
+chown hermes:hermes "$AUTH_DIR/authorized_keys"
+chmod 0600 "$AUTH_DIR/authorized_keys"
+
+for kind in ed25519 rsa; do
+    key="$SSH_DIR/ssh_host_${kind}_key"
+    if [ ! -s "$key" ]; then
+        ssh-keygen -q -N '' -t "$kind" -f "$key"
+    fi
+done
+chmod 0600 "$SSH_DIR"/ssh_host_*_key
+
+cat > /run/sshd_config_scarfgo <<EOF
+Port 2222
+ListenAddress 0.0.0.0
+HostKey $SSH_DIR/ssh_host_ed25519_key
+HostKey $SSH_DIR/ssh_host_rsa_key
+PermitRootLogin no
+PasswordAuthentication no
+KbdInteractiveAuthentication no
+PubkeyAuthentication yes
+AuthenticationMethods publickey
+AuthorizedKeysFile /opt/data/.ssh/authorized_keys
+AllowUsers hermes
+PermitUserEnvironment no
+AllowAgentForwarding no
+AllowTcpForwarding no
+X11Forwarding no
+UsePAM no
+Subsystem sftp internal-sftp
+EOF
+
+exec /usr/sbin/sshd -D -e -f /run/sshd_config_scarfgo
